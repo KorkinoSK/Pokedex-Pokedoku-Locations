@@ -23,7 +23,7 @@ function getFromApiPokemon() {
     fetch(url.value + idOfNextPokemon.value)
     .then((res)=>(res.json()))
     .then((json) => {
-    pokemons.value[idOfNextPokemon.value] = json.results 
+    pokemons.value[idOfNextPokemon.value-1] = json.sprites.official-artwork.front_default
     console.log(pokemons.value[idOfNextPokemon.value])
     console.log("From API")
 })
@@ -43,10 +43,12 @@ function getFreshBatch() {
     }
 }
 getFreshBatch()
+console.log(pokemons.value)
 </script>
 
 <template>
-  
+    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png">
+  <p>Toto je pokedex</p>
 </template>
 
 <style scoped></style>
