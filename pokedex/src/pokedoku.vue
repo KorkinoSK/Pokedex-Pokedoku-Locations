@@ -13,7 +13,7 @@ const grid = ref(
 )
 const win = ref(false)
 const pokemon = ref('')
-const placeholder = ref("Skús napr. bulbasaurus.")
+const placeholder = ref("Skús napr. bulbasaur.")
 function getTypes() {
     const localStorageApi = localStorage.getItem('types')
     if (localStorageApi) {
@@ -158,6 +158,7 @@ function startSearching(index) {
             grid.value[i] = 'unknown';
         }
     }
+    placeholder.value = 'Skús napr. Bulbasaur.'
     grid.value[index] = 'searching'
     pokemon.value = ''
 }
@@ -171,7 +172,7 @@ generateNewPokedoku()
     <p>Toto je pokedoku</p>
     <div id="board">
         <div class="columnOfText">
-            <div>TYPY</div>
+            <div class="headline">TYPY</div>
             <div>{{ chosenTypes[0].name }}</div>
             <div>{{ chosenTypes[1].name }}</div>
             <div>{{ chosenTypes[2].name }}</div>
@@ -180,7 +181,7 @@ generateNewPokedoku()
             <div>{{ chosenTypes[3].name }}</div>
             <div class="tile">
                 <img @click="startSearching(0)" v-if="grid[0] == 'unknown'" 
-                src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e" width="100px" height="100px">
+                src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e">
                 <div class="searching" v-else-if="grid[0] == 'searching'">
                     <input type="text" v-model="pokemon" :placeholder="placeholder">
                     <button @click="checkTheAnswer(0, 3, 0)">Vyhľadaj</button>
@@ -192,7 +193,7 @@ generateNewPokedoku()
             </div>
             <div class="tile">
                 <img @click="startSearching(3)" v-if="grid[3] == 'unknown'" 
-                src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e" width="100px" height="100px">
+                src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e">
                 <div class="searching" v-else-if="grid[3] == 'searching'">
                     <input type="text" v-model="pokemon" :placeholder="placeholder">
                     <button @click="checkTheAnswer(1, 3, 3)">Vyhľadaj</button>
@@ -204,7 +205,7 @@ generateNewPokedoku()
             </div>
             <div class="tile">
                 <img @click="startSearching(6)" v-if="grid[6] == 'unknown'" 
-                src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e" width="100px" height="100px">
+                src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e">
                 <div class="searching" v-else-if="grid[6] == 'searching'">
                     <input type="text" v-model="pokemon" :placeholder="placeholder">
                     <button @click="checkTheAnswer(2, 3, 6)">Vyhľadaj</button>
@@ -219,7 +220,7 @@ generateNewPokedoku()
             <div>{{ chosenTypes[4].name }}</div>
             <div class="tile">
                 <img @click="startSearching(1)" v-if="grid[1] == 'unknown'" 
-                src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e" width="100px" height="100px">
+                src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e">
                 <div class="searching" v-else-if="grid[1] == 'searching'">
                     <input type="text" v-model="pokemon" :placeholder="placeholder">
                     <button @click="checkTheAnswer(0, 4, 1)">Vyhľadaj</button>
@@ -231,7 +232,7 @@ generateNewPokedoku()
             </div>
             <div class="tile">
                 <img @click="startSearching(4)" v-if="grid[4] == 'unknown'" 
-                src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e" width="100px" height="100px">
+                src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e">
                 <div class="searching" v-else-if="grid[4] == 'searching'">
                     <input type="text" v-model="pokemon" :placeholder="placeholder">
                     <button @click="checkTheAnswer(1, 4, 4)">Vyhľadaj</button>
@@ -243,7 +244,7 @@ generateNewPokedoku()
             </div>
             <div class="tile">
                 <img @click="startSearching(7)" v-if="grid[7] == 'unknown'" 
-                src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e" width="100px" height="100px">
+                src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e">
                 <div class="searching" v-else-if="grid[7] == 'searching'">
                     <input type="text" v-model="pokemon" :placeholder="placeholder">
                     <button @click="checkTheAnswer(2, 4, 7)">Vyhľadaj</button>
@@ -258,7 +259,7 @@ generateNewPokedoku()
             <div>{{ chosenTypes[5].name }}</div>
             <div class="tile">
                 <img @click="startSearching(2)" v-if="grid[2] == 'unknown'" 
-                src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e" width="100px" height="100px">
+                src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e">
                 <div class="searching" v-else-if="grid[2] == 'searching'">
                     <input type="text" v-model="pokemon" :placeholder="placeholder">
                     <button @click="checkTheAnswer(0 , 5, 2)">Vyhľadaj</button>
@@ -270,7 +271,7 @@ generateNewPokedoku()
             </div>
             <div class="tile">
                 <img @click="startSearching(5)" v-if="grid[5] == 'unknown'" 
-                src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e" width="100px" height="100px">
+                src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e">
                 <div class="searching" v-else-if="grid[5] == 'searching'">
                     <input type="text" v-model="pokemon" :placeholder="placeholder">
                     <button @click="checkTheAnswer(1, 5, 5)">Vyhľadaj</button>
@@ -282,7 +283,7 @@ generateNewPokedoku()
             </div>
             <div class="tile">
                 <img @click="startSearching(8)" v-if="grid[8] == 'unknown'" 
-                src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e" width="100px" height="100px">
+                src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e">
                     <div class="searching" v-else-if="grid[8] == 'searching'">
                         <input type="text" v-model="pokemon" :placeholder="placeholder">
                         <button @click="checkTheAnswer(2, 5, 8)">Vyhľadaj</button>
@@ -294,15 +295,37 @@ generateNewPokedoku()
                 </div>
         </div> 
     </div>
-    <h3>{{ attemptsLeft }}/9 PP</h3>
-    <h3 v-if="win == true">GRATULUJEM VYHRAL SI!!! SI PRAVÝ POKEMÓN MAJSTER.</h3><h3 v-else-if="win == false && pokedokuIsDone == true">Womp womp.</h3>
-    <button @click="generateNewPokedoku" v-if="pokedokuIsDone == true">Skús znova!</button>
+    <div class="results">
+        <h3 class="attempts">{{ attemptsLeft }}/9 PP</h3>
+        <h3 v-if="win == true" class="win_message">GRATULUJEM VYHRAL SI!!! SI PRAVÝ POKEMÓN MAJSTER.</h3><h3 class="lose_message" v-else-if="win == false && pokedokuIsDone == true">Womp womp.</h3><br>
+        <button class="tryAgain" @click="generateNewPokedoku" v-if="pokedokuIsDone == true">Skús znova!</button>
+    </div>
 </template>
 <style scoped>
 #board {
     display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .tile {
     border: 3px solid darkgray;
+    height: 200px;
+    width: 200px;
+}
+img {
+    height: 200px;
+    width: 200px;
+}
+.columnOfText {
+    text-align: center;
+}
+.columnOfText div {
+    font-size: 40px;
+    margin-bottom: 160px;
+    margin-top: 160px;
+}
+.columnOfText .headline {
+    font-size: 30px;
+    margin-bottom: 30px;
 }
 </style>
