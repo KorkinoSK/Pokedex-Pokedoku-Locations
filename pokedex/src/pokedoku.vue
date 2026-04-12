@@ -11,7 +11,7 @@ const grid = ref(
     'unknown', 'unknown', 'unknown',
     'unknown', 'unknown', 'unknown']
 )
-
+const win = ref(false)
 const pokemon = ref('')
 const placeholder = ref("Skús napr. bulbasaurus.")
 function getTypes() {
@@ -34,41 +34,123 @@ function getTypes() {
 }
 function generateNewPokedoku() {
     pokedokuIsDone.value = false
+    win.value = false
     attemptsLeft.value = 9
+    for (let i = 0; i < grid.value.length; i++) {
+        grid.value[i] = 'unknown';
+        
+    }
     for (let i = 0; i < chosenTypes.value.length; i++) {
-        chosenTypes.value[i] = types.value[Math.floor(Math.random() * types.value.length)];
+        chosenTypes.value[i] = randomlyChooseType()
+        checkTheType(i)
     }
 }
-function checkTheAnswer() {
-    try {
+function checkTheType(i) {
+    if (i < chosenTypes.value.length/2) {
+            for (let j = 0; j < chosenTypes.value.length/2; j++) {
+                if (i != j) {
+                    if (chosenTypes.value[i] == chosenTypes.value[j]) {
+                        chosenTypes.value[i] = randomlyChooseType()
+                        checkTheType(i)
+                        break
+                    }
+                }
+            }
+        } else {
+            for (let j = chosenTypes.value.length/2; j < chosenTypes.value.length; j++) {
+                if (i != j) {
+                    if (chosenTypes.value[i] == chosenTypes.value[j]) {
+                        chosenTypes.value[i] = randomlyChooseType()
+                        checkTheType(i)
+                        break
+                    }
+                }
+            }
+        }
+}
+function randomlyChooseType() {
+    const type = types.value[Math.floor(Math.random() * types.value.length)]
+    return type
+}
+function checkTheAnswer(type1, type2, position) {
     fetch(pokemonUrl.value + pokemon.value.toLowerCase())
-    .then((res)=>(res.json()))
-    .then((json) => {
-        console.log("WIP")
+    .then(res => {
+        if (!res.ok) throw new Error('Not found')
+        return res.json()
         }
     )
-} catch(error) {
-    thisPokemonDoesNotExist()
-}
+    .then(json => {
+        if (json.types.length == 2) {
+            const isTypeRelevant = ref(0)
+            json.types.forEach(type => {
+                if (type.type.name == chosenTypes.value[type1].name) {
+                    isTypeRelevant.value++
+                }
+                if (type.type.name == chosenTypes.value[type2].name) {
+                    isTypeRelevant.value++
+                }
+            })
+            if (isTypeRelevant.value < 2) {
+                thisPokemonIsNotCorrect()
+            } else {
+                thisPokemonIsCorrect(json.id, position)
+            }    
+        } else {
+            if (json.types[0].type.name == chosenTypes.value[type1].name && json.types[0].type.name == chosenTypes.value[type2].name){
+                thisPokemonIsCorrect(json.id, position)
+            } else {
+                thisPokemonIsNotCorrect()
+            }
+        }
+    }
+    )
+    .catch(error => {
+        console.log(error)
+        thisPokemonDoesNotExist()
+        }
+    )
 }
 function thisPokemonDoesNotExist() {
     pokemon.value = ''
-    placeholder = 'Tento pokémon neexistuje. Možno si ho zle napísal?'
+    placeholder.value = 'Tento pokémon neexistuje'
 }
 function thisPokemonIsNotCorrect() {
-    
+    pokemon.value = ''
+    placeholder.value = 'Tento pokémon nepatrí sem!'
+    attemptsLeft.value--
+     if (attemptsLeft.value == 0) {
+        attemptsOut()
+    }
 }
-function thisPokemonIsCorrect() {
-    
+function thisPokemonIsCorrect(idOfPokemon, position) {
+    const isPokemonAlreadyThere = ref(false)
+    for (let i = 0; i < grid.value.length; i++) {
+        if (grid.value[i] == idOfPokemon) { 
+            placeholder.value = 'Tento pokémon už bol zadaný.'
+            isPokemonAlreadyThere.value = true
+            pokemon.value = ''
+            break
+        }
+    }
+    if (!isPokemonAlreadyThere.value) {
+        grid.value[position] = idOfPokemon
+    }
+    attemptsLeft.value--
+    if (attemptsLeft.value == 0) {
+        attemptsOut()
+    }
 }
 function attemptsOut() {
-    
+    pokedokuIsDone.value = true
+    for (let i = 0; i < grid.value.length; i++) {
+        if (grid.value[i] == 'unknown' || grid.value[i] == 'searching') {
+            break
+        }
+    }
+    youWon()
 }
 function youWon() {
-    
-}
-function youLost() {
-    
+    win.value = true
 }
 function startSearching(index) {
     for (let i = 0; i < grid.value.length; i++) {
@@ -80,8 +162,7 @@ function startSearching(index) {
     pokemon.value = ''
 }
 function stopSearching(index) {
-    grid.value[index] = 'unknown'
-    
+    grid.value[index] = 'unknown'   
 }
 
 generateNewPokedoku()
@@ -102,8 +183,11 @@ generateNewPokedoku()
                 src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e" width="100px" height="100px">
                 <div class="searching" v-else-if="grid[0] == 'searching'">
                     <input type="text" v-model="pokemon" :placeholder="placeholder">
-                    <button @click="checkTheAnswer(0, 3)">Vyhľadaj</button>
+                    <button @click="checkTheAnswer(0, 3, 0)">Vyhľadaj</button>
                     <button @click="stopSearching(0)">Odskoč si</button>
+                </div>
+                <div v-else>
+                    <img :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${grid[0]}.png`">
                 </div>
             </div>
             <div class="tile">
@@ -111,8 +195,11 @@ generateNewPokedoku()
                 src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e" width="100px" height="100px">
                 <div class="searching" v-else-if="grid[3] == 'searching'">
                     <input type="text" v-model="pokemon" :placeholder="placeholder">
-                    <button @click="checkTheAnswer(1,3)">Vyhľadaj</button>
+                    <button @click="checkTheAnswer(1, 3, 3)">Vyhľadaj</button>
                     <button @click="stopSearching(3)">Odskoč si</button>
+                </div>
+                <div v-else>
+                    <img :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${grid[3]}.png`">
                 </div>
             </div>
             <div class="tile">
@@ -120,8 +207,11 @@ generateNewPokedoku()
                 src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e" width="100px" height="100px">
                 <div class="searching" v-else-if="grid[6] == 'searching'">
                     <input type="text" v-model="pokemon" :placeholder="placeholder">
-                    <button @click="checkTheAnswer(2,3)">Vyhľadaj</button>
+                    <button @click="checkTheAnswer(2, 3, 6)">Vyhľadaj</button>
                     <button @click="stopSearching(6)">Odskoč si</button>
+                </div>
+                <div v-else>
+                    <img :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${grid[6]}.png`">
                 </div>
             </div>
         </div>
@@ -132,8 +222,11 @@ generateNewPokedoku()
                 src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e" width="100px" height="100px">
                 <div class="searching" v-else-if="grid[1] == 'searching'">
                     <input type="text" v-model="pokemon" :placeholder="placeholder">
-                    <button @click="checkTheAnswer(0,4)">Vyhľadaj</button>
+                    <button @click="checkTheAnswer(0, 4, 1)">Vyhľadaj</button>
                     <button @click="stopSearching(1)">Odskoč si</button>
+                </div>
+                <div v-else>
+                    <img :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${grid[1]}.png`">
                 </div>
             </div>
             <div class="tile">
@@ -141,8 +234,11 @@ generateNewPokedoku()
                 src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e" width="100px" height="100px">
                 <div class="searching" v-else-if="grid[4] == 'searching'">
                     <input type="text" v-model="pokemon" :placeholder="placeholder">
-                    <button @click="checkTheAnswer(1,4)">Vyhľadaj</button>
+                    <button @click="checkTheAnswer(1, 4, 4)">Vyhľadaj</button>
                     <button @click="stopSearching(4)">Odskoč si</button>
+                </div>
+                <div v-else>
+                    <img :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${grid[4]}.png`">
                 </div>
             </div>
             <div class="tile">
@@ -150,8 +246,11 @@ generateNewPokedoku()
                 src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e" width="100px" height="100px">
                 <div class="searching" v-else-if="grid[7] == 'searching'">
                     <input type="text" v-model="pokemon" :placeholder="placeholder">
-                    <button @click="checkTheAnswer(2,4)">Vyhľadaj</button>
+                    <button @click="checkTheAnswer(2, 4, 7)">Vyhľadaj</button>
                     <button @click="stopSearching(7)">Odskoč si</button>
+                </div>
+                <div v-else>
+                    <img :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${grid[7]}.png`">
                 </div>
             </div>
         </div>
@@ -162,8 +261,11 @@ generateNewPokedoku()
                 src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e" width="100px" height="100px">
                 <div class="searching" v-else-if="grid[2] == 'searching'">
                     <input type="text" v-model="pokemon" :placeholder="placeholder">
-                    <button @click="checkTheAnswer(0,5)">Vyhľadaj</button>
+                    <button @click="checkTheAnswer(0 , 5, 2)">Vyhľadaj</button>
                     <button @click="stopSearching(2)">Odskoč si</button>
+                </div>
+                <div v-else>
+                    <img :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${grid[2]}.png`">
                 </div>
             </div>
             <div class="tile">
@@ -171,8 +273,11 @@ generateNewPokedoku()
                 src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e" width="100px" height="100px">
                 <div class="searching" v-else-if="grid[5] == 'searching'">
                     <input type="text" v-model="pokemon" :placeholder="placeholder">
-                    <button @click="checkTheAnswer(1,5)">Vyhľadaj</button>
+                    <button @click="checkTheAnswer(1, 5, 5)">Vyhľadaj</button>
                     <button @click="stopSearching(5)">Odskoč si</button>
+                </div>
+                <div v-else>
+                    <img :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${grid[5]}.png`">
                 </div>
             </div>
             <div class="tile">
@@ -180,13 +285,17 @@ generateNewPokedoku()
                 src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e" width="100px" height="100px">
                     <div class="searching" v-else-if="grid[8] == 'searching'">
                         <input type="text" v-model="pokemon" :placeholder="placeholder">
-                        <button @click="checkTheAnswer(2,5)">Vyhľadaj</button>
+                        <button @click="checkTheAnswer(2, 5, 8)">Vyhľadaj</button>
                         <button @click="stopSearching(8)">Odskoč si</button>
+                    </div>
+                    <div v-else>
+                        <img :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${grid[8]}.png`">
                     </div>
                 </div>
         </div> 
     </div>
     <h3>{{ attemptsLeft }}/9 PP</h3>
+    <h3 v-if="win == true">GRATULUJEM VYHRAL SI!!! SI PRAVÝ POKEMÓN MAJSTER.</h3><h3 v-else-if="win == false && pokedokuIsDone == true">Womp womp.</h3>
     <button @click="generateNewPokedoku" v-if="pokedokuIsDone == true">Skús znova!</button>
 </template>
 <style scoped>
