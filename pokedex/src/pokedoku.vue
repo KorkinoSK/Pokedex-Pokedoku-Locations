@@ -1,25 +1,37 @@
 <script setup>
 import { ref } from "vue";
+
 const pokedokuIsDone = ref(false)
+
 const url = ref("https://pokeapi.co/api/v2/type")
+
 const pokemonUrl = ref("https://pokeapi.co/api/v2/pokemon-form/")
+
 const types = ref(getTypes())
+
 const chosenTypes = ref(["","","","","",""])
+
 const attemptsLeft = ref(0)
+
 const grid = ref(
     ['unknown', 'unknown', 'unknown',
     'unknown', 'unknown', 'unknown',
     'unknown', 'unknown', 'unknown']
 )
+
 const win = ref(false)
+
 const pokemon = ref('')
+
 const placeholder = ref("Skús napr. bulbasaur.")
+
+const data = JSON.parse(localStorage.getItem('data'))
+
 function getTypes() {
     const localStorageApi = localStorage.getItem('types')
     if (localStorageApi) {
         console.log("From local storage")
         return JSON.parse(localStorageApi)
-        
     }
     fetch(url.value)
     .then((res)=>(res.json()))
@@ -32,6 +44,7 @@ function getTypes() {
         }
     )
 }
+
 function generateNewPokedoku() {
     pokedokuIsDone.value = false
     win.value = false
@@ -42,16 +55,21 @@ function generateNewPokedoku() {
     }
     for (let i = 0; i < chosenTypes.value.length; i++) {
         chosenTypes.value[i] = randomlyChooseType()
+        console.log(chosenTypes.value[i])
         checkTheType(i)
     }
+    console.log(chosenTypes.value)
+    checkIfThePokedokuIsPossible()
 }
+
 function checkTheType(i) {
+    //Kontroluje, v akej polovici sa ten typ nachádza 
     if (i < chosenTypes.value.length/2) {
             for (let j = 0; j < chosenTypes.value.length/2; j++) {
                 if (i != j) {
                     if (chosenTypes.value[i] == chosenTypes.value[j]) {
                         chosenTypes.value[i] = randomlyChooseType()
-                        checkTheType(i)
+                        //checkTheType(i)
                         break
                     }
                 }
@@ -61,17 +79,18 @@ function checkTheType(i) {
                 if (i != j) {
                     if (chosenTypes.value[i] == chosenTypes.value[j]) {
                         chosenTypes.value[i] = randomlyChooseType()
-                        checkTheType(i)
+                        //checkTheType(i)
                         break
                     }
                 }
             }
         }
 }
+
 function randomlyChooseType() {
-    const type = types.value[Math.floor(Math.random() * types.value.length)]
-    return type
+    return types.value[Math.floor(Math.random() * types.value.length)]
 }
+
 function checkTheAnswer(type1, type2, position) {
     fetch(pokemonUrl.value + pokemon.value.toLowerCase())
     .then(res => {
@@ -81,16 +100,16 @@ function checkTheAnswer(type1, type2, position) {
     )
     .then(json => {
         if (json.types.length == 2) {
-            const isTypeRelevant = ref(0)
+            let isTypeRelevant = 0
             json.types.forEach(type => {
                 if (type.type.name == chosenTypes.value[type1].name) {
-                    isTypeRelevant.value++
+                    isTypeRelevant++
                 }
                 if (type.type.name == chosenTypes.value[type2].name) {
-                    isTypeRelevant.value++
+                    isTypeRelevant++
                 }
             })
-            if (isTypeRelevant.value < 2) {
+            if (isTypeRelevant < 2) {
                 thisPokemonIsNotCorrect()
             } else {
                 thisPokemonIsCorrect(json.id, position)
@@ -109,6 +128,39 @@ function checkTheAnswer(type1, type2, position) {
         thisPokemonDoesNotExist()
         }
     )
+}
+function checkIfThePokedokuIsPossible() {
+    for (let i = 0; i < 3; i++) {
+        console.log(chosenTypes.value[i].name)
+        for (let j = 3; j < 6; j++) {
+            console.log(chosenTypes.value[j].name)
+            for (let p = 0; p < 1025; p++) {
+                if (data[p].types.length == 2) {
+                    let isTypeRelevant = 0
+                    data[p].types.forEach(type => {
+                    
+                    if (type.type.name == chosenTypes.value[i].name) {
+                        isTypeRelevant++
+                    }
+                    
+                    if (type.type.name == chosenTypes.value[j].name) {
+                        isTypeRelevant++
+                    }
+                    })
+                    if (isTypeRelevant > 2) {
+                        break
+                    }
+                } else {
+                    if (data[p].types[0].type.name == chosenTypes.value[i].name && data[p].types[0].type.name == chosenTypes.value[j].name){
+                        break
+                    }
+                }
+                if (p == 1024) {
+                    generateNewPokedoku()
+                }
+            }
+        }
+    }
 }
 function thisPokemonDoesNotExist() {
     pokemon.value = ''
@@ -142,15 +194,12 @@ function thisPokemonIsCorrect(idOfPokemon, position) {
 }
 function attemptsOut() {
     pokedokuIsDone.value = true
+    win.value = true
     for (let i = 0; i < grid.value.length; i++) {
         if (grid.value[i] == 'unknown' || grid.value[i] == 'searching') {
-            break
+            win.value = false
         }
     }
-    youWon()
-}
-function youWon() {
-    win.value = true
 }
 function startSearching(index) {
     for (let i = 0; i < grid.value.length; i++) {
@@ -165,20 +214,21 @@ function startSearching(index) {
 function stopSearching(index) {
     grid.value[index] = 'unknown'   
 }
-
 generateNewPokedoku()
 </script>
 <template>
+<main>
     <p>Toto je pokedoku</p>
+    <!--Celý board baby-->
     <div id="board">
         <div class="columnOfText">
             <div class="headline">TYPY</div>
-            <div>{{ chosenTypes[0].name }}</div>
-            <div>{{ chosenTypes[1].name }}</div>
-            <div>{{ chosenTypes[2].name }}</div>
+            <div class="type">{{ chosenTypes[0].name }}</div>
+            <div class="type">{{ chosenTypes[1].name }}</div>
+            <div class="type">{{ chosenTypes[2].name }}</div>
         </div>
         <div class="column">
-            <div>{{ chosenTypes[3].name }}</div>
+            <div class="type">{{ chosenTypes[3].name }}</div>
             <div class="tile">
                 <img @click="startSearching(0)" v-if="grid[0] == 'unknown'" 
                 src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e">
@@ -217,7 +267,7 @@ generateNewPokedoku()
             </div>
         </div>
         <div class="column">
-            <div>{{ chosenTypes[4].name }}</div>
+            <div class="type">{{ chosenTypes[4].name }}</div>
             <div class="tile">
                 <img @click="startSearching(1)" v-if="grid[1] == 'unknown'" 
                 src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e">
@@ -256,7 +306,7 @@ generateNewPokedoku()
             </div>
         </div>
         <div class="column">
-            <div>{{ chosenTypes[5].name }}</div>
+            <div class="type">{{ chosenTypes[5].name }}</div>
             <div class="tile">
                 <img @click="startSearching(2)" v-if="grid[2] == 'unknown'" 
                 src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e">
@@ -300,8 +350,13 @@ generateNewPokedoku()
         <h3 v-if="win == true" class="win_message">GRATULUJEM VYHRAL SI!!! SI PRAVÝ POKEMÓN MAJSTER.</h3><h3 class="lose_message" v-else-if="win == false && pokedokuIsDone == true">Womp womp.</h3><br>
         <button class="tryAgain" @click="generateNewPokedoku" v-if="pokedokuIsDone == true">Skús znova!</button>
     </div>
+</main>
 </template>
 <style scoped>
+
+main {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 #board {
     display: flex;
     justify-content: center;
@@ -319,13 +374,20 @@ img {
 .columnOfText {
     text-align: center;
 }
-.columnOfText div {
+.type {
     font-size: 40px;
+    text-transform: uppercase;
+}
+.columnOfText div {
     margin-bottom: 160px;
     margin-top: 160px;
 }
 .columnOfText .headline {
     font-size: 30px;
     margin-bottom: 30px;
+}
+.results {
+    text-align: center;
+    font-size: 25px;
 }
 </style>

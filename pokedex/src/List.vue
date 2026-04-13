@@ -1,54 +1,50 @@
 <script setup>
 import { RouterLink } from 'vue-router';
 import { ref } from "vue";
-const idOfNextPokemon = ref(1) 
-const url = ref("https://pokeapi.co/api/v2/pokemon/")
+const idOfNextPokemon = ref(1)
+
+const url = ref("https://pokeapi.co/api/v2/pokemon-form/")
+
 const pokemons = ref([])
+
 const data = localStorage.getItem('data')
-console.log(url.value + idOfNextPokemon.value)
-function getNewPokemons() {
-    if (data != null) {
-        if (data[idOfNextPokemon.value] != null) {
-            getFromLocalStoragePokemon()
-            idOfNextPokemon.value++
-        }
-    } 
-    else {
-        getFromApiPokemon()
-        idOfNextPokemon.value++
-        localStorage.setItem("data", pokemons.value)
-    }
-}
-function getFromApiPokemon() {
-    fetch(url.value + idOfNextPokemon.value)
-    .then((res)=>(res.json()))
-    .then((json) => {
-    pokemons.value[idOfNextPokemon.value-1] = json.sprites.official-artwork.front_default
-    console.log(pokemons.value[idOfNextPokemon.value])
-    console.log("From API")
-})
 
+const maxIdForPokemon = ref(12)
 
+async function getAllPokemons() {
+  if (!data) {
+    const all = await fetchAllPokemons()
+    pokemons.value = all
+    localStorage.setItem('data', JSON.stringify(all))
+  } else {
+    takeOutAllPokemons()
+  }
 }
-function getFromLocalStoragePokemon() {
-    pokemons.value[idOfNextPokemon.value] = data[idOfNextPokemon.value];
-    console.log(pokemons.value)
-    console.log("From Local Storage")
-    
 
+async function fetchAllPokemons() {
+  const promises = []
+  for (let i = 1; i <= 1025; i++) {
+    promises.push(fetch(url.value + i).then(res => res.json()))
+  }
+  return Promise.all(promises)
 }
+
+function takeOutAllPokemons() {
+  pokemons.value = JSON.parse(data)
+}
+
 function getFreshBatch() {
-    for (let i = 0; i < 4; i++) {
-        getNewPokemons()
-    }
+    maxIdForPokemon.value += 4
 }
-getFreshBatch()
-console.log(pokemons.value)
+getAllPokemons()
 </script>
 
 <template>
-    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png">
   <p>Toto je pokedex</p>
+  <div v-for="pokemon in pokemons" :key="pokemon" >
+  <p  v-if="pokemon.id <= maxIdForPokemon">{{ pokemon.name }}</p>
+  </div>
+  <button @click="getFreshBatch">Načítaj viac pokémonov</button>
 </template>
 
 <style scoped></style>
