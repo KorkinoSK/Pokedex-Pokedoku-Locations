@@ -1,9 +1,9 @@
 <script setup>
 import { RouterLink } from 'vue-router';
 import { ref } from "vue";
-const idOfNextPokemon = ref(1)
 
-const url = ref("https://pokeapi.co/api/v2/pokemon-form/")
+
+const url = ref("https://pokeapi.co/api/v2/pokemon/")
 
 const pokemons = ref([])
 
@@ -23,7 +23,7 @@ async function getAllPokemons() {
 
 async function fetchAllPokemons() {
   const promises = []
-  for (let i = 1; i <= 1025; i++) {
+  for (let i = 1; i <= 20; i++) {
     promises.push(fetch(url.value + i).then(res => res.json()))
   }
   return Promise.all(promises)

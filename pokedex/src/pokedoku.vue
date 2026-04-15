@@ -59,7 +59,7 @@ function generateNewPokedoku() {
         checkTheType(i)
     }
     console.log(chosenTypes.value)
-    checkIfThePokedokuIsPossible()
+    //checkIfThePokedokuIsPossible()
 }
 
 function checkTheType(i) {
@@ -129,6 +129,8 @@ function checkTheAnswer(type1, type2, position) {
         }
     )
 }
+//Nefunkčná funkcia
+//Príliš veľa kontrol, až to potom nezvládame
 function checkIfThePokedokuIsPossible() {
     for (let i = 0; i < 3; i++) {
         console.log(chosenTypes.value[i].name)
