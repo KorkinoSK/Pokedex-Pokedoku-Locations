@@ -163,6 +163,7 @@ function checkIfThePokedokuIsPossible() {
             }
         }
     }
+    
 }
 function thisPokemonDoesNotExist() {
     pokemon.value = ''
@@ -225,12 +226,12 @@ generateNewPokedoku()
     <div id="board">
         <div class="columnOfText">
             <div class="headline">TYPY</div>
-            <div class="type">{{ chosenTypes[0].name }}</div>
-            <div class="type">{{ chosenTypes[1].name }}</div>
-            <div class="type">{{ chosenTypes[2].name }}</div>
+            <div class="type_hint">{{ chosenTypes[0].name }}</div>
+            <div class="type_hint">{{ chosenTypes[1].name }}</div>
+            <div class="type_hint">{{ chosenTypes[2].name }}</div>
         </div>
         <div class="column">
-            <div class="type">{{ chosenTypes[3].name }}</div>
+            <div class="type_hint">{{ chosenTypes[3].name }}</div>
             <div class="tile">
                 <img @click="startSearching(0)" v-if="grid[0] == 'unknown'" 
                 src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e">
@@ -269,7 +270,7 @@ generateNewPokedoku()
             </div>
         </div>
         <div class="column">
-            <div class="type">{{ chosenTypes[4].name }}</div>
+            <div class="type_hint">{{ chosenTypes[4].name }}</div>
             <div class="tile">
                 <img @click="startSearching(1)" v-if="grid[1] == 'unknown'" 
                 src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e">
@@ -308,7 +309,7 @@ generateNewPokedoku()
             </div>
         </div>
         <div class="column">
-            <div class="type">{{ chosenTypes[5].name }}</div>
+            <div class="type_hint">{{ chosenTypes[5].name }}</div>
             <div class="tile">
                 <img @click="startSearching(2)" v-if="grid[2] == 'unknown'" 
                 src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fquestion_mark%2Fquestion_mark_PNG70.png&f=1&nofb=1&ipt=707fd30ce8f04457c290fe6a553bd687998a973f8add407247101e8b3299166e">
@@ -376,7 +377,7 @@ img {
 .columnOfText {
     text-align: center;
 }
-.type {
+.type_hint {
     font-size: 40px;
     text-transform: uppercase;
 }
