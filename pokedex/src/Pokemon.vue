@@ -70,8 +70,23 @@ function getNextId() {
 
 <template>
   <p>{{ pokemon.name }}</p>
+  <img :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/`+pokemon.id+`.png`" alt="obrázok pokémona">
+  <div v-for="ability in pokemon.abilities">
+    <p>{{ ability.ability.name }}</p>
+    <p>Je skrytá? {{ ability.is_hidden }}</p>
+  </div>
+  <div v-for="stat in pokemon.stats">
+    <p>{{ stat.stat.name }}: {{ stat.base_stat }}</p>
+  </div>
+  <div v-for="type in pokemon.types">
+          <p class="type" :key="type" :class="type.type.name">{{ type.type.name }}</p>
+  </div>
   <RouterLink :to="{ name: 'pokemon', params: {idOfPreviousPokemon}}">Choď na predchádzajúceho pokémona</RouterLink>
   <RouterLink :to="{ name: 'pokemon', params: {idOfNextPokemon}}">Choď na ďalšieho pokémona</RouterLink>
 </template>
 
-<style scoped></style>
+<style scoped>
+.type{
+  display: inline-block;
+}
+</style>
