@@ -17,7 +17,6 @@ import { router } from './main';
 
 <style>
 .type {
-  display: inline-block;
   padding: 4px 10px;
   border-radius: 12px;
   color: #fff;
