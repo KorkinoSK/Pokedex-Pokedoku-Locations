@@ -7,8 +7,9 @@ import { router } from './main';
 <template>
   <h1>Pokédex a Pokedoku v jednom</h1>
   <nav>
-    <RouterLink class="link" to="/">↪Naspäť na Pokedex</RouterLink>
-    <RouterLink class="link" to="/pokedoku">↪Pokedoku</RouterLink>
+    <RouterLink class="link" to="/">↪Pokedex</RouterLink><br>
+    <RouterLink class="link" to="/pokedoku">↪Pokedoku</RouterLink><br>
+    <RouterLink class="link" to="/pack">↪Gamba</RouterLink>
   </nav>
   <main>
     <RouterView />

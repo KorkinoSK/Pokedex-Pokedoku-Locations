@@ -217,6 +217,7 @@ function startSearching(index) {
 function stopSearching(index) {
     grid.value[index] = 'unknown'   
 }
+
 generateNewPokedoku()
 </script>
 <template>
