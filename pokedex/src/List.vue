@@ -120,7 +120,7 @@ function toggleAdvancedSearch() {
   }
 }
 function advancedSearching() {
-  if (minHeight.value >= maxHeight.value || minWeight.value >= maxHeight.value || minHeight.value < 0 || maxHeight.value < 0 || minWeight.value < 0 || maxWeight.value < 0 || selectedTypes.value.length < 3 ) {
+  if (minHeight.value >= maxHeight.value || minWeight.value >= maxWeight.value || minHeight.value < 0 || maxHeight.value < 0 || minWeight.value < 0 || maxWeight.value < 0) {
     alert("Zlé nastavenia, skús znova po úprave! Filtre sa neuložili")
     return
   }
@@ -169,7 +169,7 @@ getAllPokemons()
     <button @click="advancedSearching">Pokročilo hľadať</button>
   </div>
   <div v-if="pokemons" v-for="pokemon in pokemons" :key="pokemon">
-    <div v-if="pokemon.id <= maxIdForPokemon &&minWeightSearched < pokemon.weight && pokemon.weight < maxWeightSearched&& minHeightSearched < pokemon.height && pokemon.height < maxHeightSearched && pokemon.name.includes(searchingPrompt) || pokemon.id == searchingPrompt && advancedSearch">
+    <div v-if="pokemon.id <= maxIdForPokemon &&minWeightSearched < pokemon.weight && pokemon.weight < maxWeightSearched&& minHeightSearched < pokemon.height && pokemon.height < maxHeightSearched && pokemon.name.includes(searchingPrompt) || pokemon.id == searchingPrompt">
       
         <img width="150px" height="150px" :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/`+pokemon.id+`.png`" alt="obrázok pokémona">
         <RouterLink :to="'/pokemon/' + pokemon.id"><p class="name">{{ pokemon.name }}</p></RouterLink>     
